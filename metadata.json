@@ -1,0 +1,8 @@
+{
+  "name": "T@zul’s Care - Coaching Management System",
+  "description": "T@zul’s Care (তাজুল'স কেয়ার) - গণিত ও উচ্চতর গণিত বিশেষ কোচিং ম্যানেজমেন্ট প্ল্যাটফর্ম (Class 5 to SSC Candidate)",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

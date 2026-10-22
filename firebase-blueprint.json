@@ -1,0 +1,169 @@
+{
+  "entities": {
+    "Student": {
+      "title": "Student",
+      "description": "Student profile and academic enrollment information",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string", "maxLength": 32 },
+        "username": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 100 },
+        "photoUrl": { "type": "string", "maxLength": 500000 },
+        "guardianName": { "type": "string", "maxLength": 100 },
+        "guardianPhone": { "type": "string", "maxLength": 20 },
+        "studentPhone": { "type": "string", "maxLength": 20 },
+        "classLevel": { "type": "string", "enum": ["class_5", "class_6", "class_7", "class_8", "class_9", "class_10"] },
+        "enrolledSubjects": { "type": "array" },
+        "batchId": { "type": "string", "maxLength": 64 },
+        "admissionDate": { "type": "string", "maxLength": 20 },
+        "monthlyFee": { "type": "number" },
+        "paymentStatus": { "type": "string", "enum": ["paid", "partial", "unpaid"] },
+        "status": { "type": "string", "enum": ["active", "inactive", "deactivated"] },
+        "notes": { "type": "string", "maxLength": 1000 },
+        "uid": { "type": "string", "maxLength": 128 },
+        "mustChangePassword": { "type": "boolean" },
+        "hasAuthAccount": { "type": "boolean" },
+        "createdAt": { "type": "string", "maxLength": 40 }
+      },
+      "required": ["studentId", "name", "classLevel", "guardianName", "guardianPhone", "status"]
+    },
+    "Batch": {
+      "title": "Batch",
+      "description": "Class batch schedule and room assignment",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 100 },
+        "classLevel": { "type": "string", "enum": ["class_5", "class_6", "class_7", "class_8", "class_9", "class_10"] },
+        "subject": { "type": "string", "enum": ["math", "higher_math"] },
+        "teacher": { "type": "string", "maxLength": 100 },
+        "scheduleDays": { "type": "string", "maxLength": 100 },
+        "time": { "type": "string", "maxLength": 50 },
+        "room": { "type": "string", "maxLength": 50 },
+        "status": { "type": "string", "enum": ["active", "archived"] },
+        "notes": { "type": "string", "maxLength": 500 }
+      },
+      "required": ["name", "classLevel", "subject", "teacher", "status"]
+    },
+    "AttendanceSession": {
+      "title": "AttendanceSession",
+      "description": "Session attendance records for a batch",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string", "maxLength": 20 },
+        "batchId": { "type": "string", "maxLength": 64 },
+        "classLevel": { "type": "string" },
+        "subject": { "type": "string" },
+        "records": { "type": "array" },
+        "recordedAt": { "type": "string", "maxLength": 40 }
+      },
+      "required": ["date", "batchId", "classLevel", "subject", "records"]
+    },
+    "FeePayment": {
+      "title": "FeePayment",
+      "description": "Monthly fee payment transactions and receipts",
+      "type": "object",
+      "properties": {
+        "receiptNo": { "type": "string", "maxLength": 32 },
+        "studentId": { "type": "string", "maxLength": 64 },
+        "month": { "type": "string", "maxLength": 50 },
+        "monthlyFee": { "type": "number" },
+        "paidAmount": { "type": "number" },
+        "discount": { "type": "number" },
+        "dueAmount": { "type": "number" },
+        "paymentDate": { "type": "string", "maxLength": 20 },
+        "paymentMethod": { "type": "string" },
+        "status": { "type": "string", "enum": ["paid", "partial", "unpaid"] },
+        "collectedBy": { "type": "string", "maxLength": 100 },
+        "notes": { "type": "string", "maxLength": 500 }
+      },
+      "required": ["receiptNo", "studentId", "month", "paidAmount", "paymentDate"]
+    },
+    "Exam": {
+      "title": "Exam",
+      "description": "Exam definitions and student results",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "maxLength": 150 },
+        "classLevel": { "type": "string" },
+        "subject": { "type": "string" },
+        "batchId": { "type": "string", "maxLength": 64 },
+        "date": { "type": "string", "maxLength": 20 },
+        "totalMarks": { "type": "number" },
+        "passMarks": { "type": "number" },
+        "results": { "type": "array" },
+        "isPublished": { "type": "boolean" },
+        "publishedAt": { "type": "string", "maxLength": 40 },
+        "createdAt": { "type": "string", "maxLength": 40 }
+      },
+      "required": ["title", "classLevel", "subject", "totalMarks", "passMarks"]
+    },
+    "Notice": {
+      "title": "Notice",
+      "description": "Announcements and notices for students and classes",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "maxLength": 200 },
+        "content": { "type": "string", "maxLength": 5000 },
+        "date": { "type": "string", "maxLength": 20 },
+        "priority": { "type": "string", "enum": ["normal", "important", "urgent"] },
+        "targetClass": { "type": "string" },
+        "targetBatchId": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["title", "content", "date", "priority", "targetClass"]
+    },
+    "InstitutionSettings": {
+      "title": "InstitutionSettings",
+      "description": "Institution branding and payment instructions",
+      "type": "object",
+      "properties": {
+        "institutionName": { "type": "string", "maxLength": 150 },
+        "tagline": { "type": "string", "maxLength": 200 },
+        "directorName": { "type": "string", "maxLength": 100 },
+        "phone": { "type": "string", "maxLength": 50 },
+        "email": { "type": "string", "maxLength": 100 },
+        "address": { "type": "string", "maxLength": 300 },
+        "logoUrl": { "type": "string", "maxLength": 500000 },
+        "academicYear": { "type": "string", "maxLength": 20 },
+        "currencySymbol": { "type": "string", "maxLength": 10 },
+        "paymentInstructions": { "type": "object" }
+      },
+      "required": ["institutionName"]
+    }
+  },
+  "firestore": {
+    "/students/{studentDocId}": {
+      "schema": "Student",
+      "description": "All student profile documents"
+    },
+    "/batches/{batchDocId}": {
+      "schema": "Batch",
+      "description": "All academic batches"
+    },
+    "/attendance/{attendanceDocId}": {
+      "schema": "AttendanceSession",
+      "description": "Class attendance records"
+    },
+    "/fees/{feeDocId}": {
+      "schema": "FeePayment",
+      "description": "Fee payment records"
+    },
+    "/exams/{examDocId}": {
+      "schema": "Exam",
+      "description": "Examinations and marks"
+    },
+    "/notices/{noticeDocId}": {
+      "schema": "Notice",
+      "description": "Announcements and notices"
+    },
+    "/settings/institution": {
+      "schema": "InstitutionSettings",
+      "description": "Institution settings and branding"
+    },
+    "/admins/{adminUid}": {
+      "schema": {
+        "$ref": "#/entities/InstitutionSettings"
+      },
+      "description": "Administrator UID registry for RBAC validation"
+    }
+  }
+}

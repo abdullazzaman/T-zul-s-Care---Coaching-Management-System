@@ -1,0 +1,141 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        request.auth.token.email == 'saiduzzamanhorof123@gmail.com' ||
+        request.auth.token.email == 'admin@tazulscare.internal'
+      );
+    }
+
+    function isStudentOwner(studentUid) {
+      return isSignedIn() && request.auth.uid == studentUid;
+    }
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Health / connection test document
+    match /test/{docId} {
+      allow read: if true;
+    }
+
+    // Admin registry
+    match /admins/{adminUid} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Settings
+    match /settings/{settingId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Students collection
+    match /students/{studentDocId} {
+      allow read: if isAdmin() || (
+        isSignedIn() && resource.data.uid == request.auth.uid
+      );
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (
+        isSignedIn() && 
+        resource.data.uid == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['studentPhone', 'photoUrl', 'mustChangePassword'])
+      );
+    }
+
+    // Batches
+    match /batches/{batchDocId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Attendance
+    match /attendance/{attendanceDocId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Fees
+    match /fees/{feeDocId} {
+      allow read: if isAdmin() || (
+        isSignedIn() && (
+          resource.data.studentId == request.auth.uid ||
+          resource.data.studentDbId == request.auth.uid
+        )
+      );
+      allow write: if isAdmin();
+    }
+
+    // Exams
+    match /exams/{examDocId} {
+      allow read: if isAdmin() || (
+        isSignedIn() && resource.data.isPublished == true
+      );
+      allow write: if isAdmin();
+    }
+
+    // Notices
+    match /notices/{noticeDocId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Examination Events (Admit Card Exams)
+    match /examination_events/{examId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Examination Fee Records
+    match /exam_fee_records/{recordId} {
+      allow read: if isAdmin() || (
+        isSignedIn() && (
+          resource.data.studentId == request.auth.uid ||
+          resource.data.studentDbId == request.auth.uid
+        )
+      );
+      // Admin can create, update, delete. Students can submit payment verification request for their own record
+      allow create: if isAdmin() || (
+        isSignedIn() && (
+          request.resource.data.studentId == request.auth.uid ||
+          request.resource.data.studentDbId == request.auth.uid
+        ) && request.resource.data.status == 'pending'
+      );
+      allow update: if isAdmin() || (
+        isSignedIn() && (
+          resource.data.studentId == request.auth.uid ||
+          resource.data.studentDbId == request.auth.uid
+        ) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['paidAmount', 'paymentDate', 'paymentMethod', 'transactionRef', 'status', 'notes', 'updatedAt'])
+        && request.resource.data.status == 'pending'
+      );
+      allow delete: if isAdmin();
+    }
+
+    // Admit Card Clearances
+    match /exam_clearance_records/{clearanceId} {
+      allow read: if isAdmin() || (
+        isSignedIn() && (
+          resource.data.studentId == request.auth.uid ||
+          resource.data.studentDbId == request.auth.uid
+        )
+      );
+      allow write: if isAdmin();
+    }
+
+    // Clearance Audit Logs
+    match /clearance_audit_logs/{logId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
+
